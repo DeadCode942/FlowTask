@@ -91,7 +91,7 @@ public class User {
             return true;
         if (user == null )
             return false;
-        User other = (User) obj;
+        User other = user;
         return userId == other.userId &&
                Objects.equals(name, other.name) &&
                Objects.equals(phoneNumber, other.phoneNumber) &&

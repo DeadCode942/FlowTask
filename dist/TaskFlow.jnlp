@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="TaskFlow.jnlp">
+  <information>
+    <title>TaskFlow</title>
+    <vendor>AHW STORE</vendor>
+    <description>null</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="TaskFlow.jar" size="16453" download="eager" />
+    <jar href="lib\sqlite-jdbc-3.48.0.0.jar" size="14298332" download="eager" />
+  </resources>
+  <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="TaskFlow" >
+    <param name="requiredFXVersion" value="8.0+"/>
+  </applet-desc>
+  <jfx:javafx-desc  width="800" height="600" main-class="frontand.TaskFlow"  name="TaskFlow" />
+  <update check="always"/>
+</jnlp>

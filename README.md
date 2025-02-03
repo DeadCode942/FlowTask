@@ -46,7 +46,9 @@ If you'd like to contribute, feel free to fork the repository, create a new bran
 📩 Contact
 
 For any inquiries or support, feel free to contact Youssef Hassan:
+
 📧 Email: yhassan5335@gmail.com
+
 🔗 GitHub: https://github.com/DeadCode942
 
 🚀 TaskFlow - Stay Organized, Stay Productive! 🎯

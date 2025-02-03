@@ -5,12 +5,12 @@
  */
 package backend;
 
+import java.util.List;
+
 /**
  *
  * @author AHW STORE
  */
-import java.util.List;
-
 public class TaskManager 
 {
     private DatabaseHandler databaseHandler;
@@ -20,23 +20,23 @@ public class TaskManager
         databaseHandler = new DatabaseHandler();
     }
 
-    public void addTask(Task task) 
+    public boolean addTask(Task task) 
     {
-        databaseHandler.addTask(task);
+        return databaseHandler.addTask(task);
     }
 
-    public void updateTask(Task task) 
+    public boolean updateTask(Task task) 
     {
-        databaseHandler.updateTask(task);
+        return databaseHandler.updateTask(task);
     }
 
-    public void deleteTask(int taskId) 
+    public boolean deleteTask(Task task) 
     {
-        databaseHandler.deleteTask(taskId);
+        return databaseHandler.deleteTask(task);
     }
 
     public List<Task> getTasksByUser(User user) 
     {
-        return databaseHandler.getTasksByUser(user.getUserId());
+        return databaseHandler.getTasksByUser(user);
     }
 }

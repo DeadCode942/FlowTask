@@ -85,11 +85,11 @@ public class User {
         this.password = password;
     }
 
-    public boolean equals(User obj)
+    public boolean equals(User user)
     {
-        if (this == obj)
+        if (this == user)
             return true;
-        if (obj == null )
+        if (user == null )
             return false;
         User other = (User) obj;
         return userId == other.userId &&

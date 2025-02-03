@@ -5,27 +5,31 @@
  */
 package backend;
 
+import java.util.Date;
+
 /**
  *
  * @author AHW STORE
  */
-import java.util.Date;
-
 public class Backup 
 {
     private int backupId;
     private int userId;
     private Date backupDate;
-    private String backupData; 
     
-    public Backup(int backupId, int userId, Date backupDate, String backupData) 
+    public Backup(int backupId, int userId, Date backupDate) 
     {
         this.backupId = backupId;
         this.userId = userId;
         this.backupDate = backupDate;
-        this.backupData = backupData;
     }
 
+    public Backup(int userId, Date backupDate)
+    {
+        this.userId = userId;
+        this.backupDate = backupDate;
+    }
+    
     public int getBackupId() 
     {
         return backupId;
@@ -56,24 +60,11 @@ public class Backup
         this.backupDate = backupDate;
     }
 
-    public String getBackupData()
-    {
-        return backupData;
-    }
-
-    public void setBackupData(String backupData) 
-    {
-        this.backupData = backupData;
-    }
-
     @Override
-    public String toString()
-    {
-        return "Backup{" +
-               "backupId=" + backupId +
-               ", userId=" + userId +
-               ", backupDate=" + backupDate +
-               ", backupData='" + backupData + '\'' +
-               '}';
+    public String toString() {
+        return "Backup{" + "backupId=" + backupId + ", userId=" + userId + ", backupDate=" + backupDate + '}';
     }
+
+   
+   
 }

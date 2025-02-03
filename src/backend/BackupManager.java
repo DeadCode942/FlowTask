@@ -9,8 +9,8 @@ package backend;
  *
  * @author AHW STORE
  */
-import java.util.Date;
-import java.util.List;
+import java.io.*;
+
 
 public class BackupManager 
 {
@@ -21,41 +21,50 @@ public class BackupManager
         databaseHandler = new DatabaseHandler();
     }
 
-    public void createBackup(int userId)
+    public boolean createBackup(User user,Backup backup,String path,String fileName)
     {
-        Date backupDate = new Date();
-
-        String backupData = convertDataToText(userId);
-
-        Backup backup = new Backup(0, userId, backupDate, backupData);
-        databaseHandler.addBackup(backup);
-    }
-
-    public void restoreBackup(int backupId) {
-        Backup backup = databaseHandler.getBackupsByUser(backupId).get(0);
-        String backupData = backup.getBackupData();
-
-        restoreDataFromText(backupData);
-    }
-
-    private String convertDataToText(int userId)
-    {
-        StringBuilder data = new StringBuilder();
-        data.append("Tasks:\n");
-        for (Task task : databaseHandler.getTasksByUser(userId)) 
+        if(databaseHandler.addBackup(backup))
         {
-            data.append(task.toString()).append("\n");
+            if (databaseHandler.exportDataBase(user) != null)
+            {
+                try 
+                {
+                    FileOutputStream fi = new FileOutputStream(new File("c://database.txt"));
+                    fi.write(databaseHandler.exportDataBase(user).getBytes());
+                    fi.close();
+                    return true;
+                }
+                catch (Exception e) 
+                {
+                    e.printStackTrace();
+                    return false;
+
+                }
+            }
         }
-        data.append("Notifications:\n");
-        for (Notification notification : databaseHandler.getNotificationsByTask(userId))
-        {
-            data.append(notification.toString()).append("\n");
-        }
-        return data.toString();
+        return false;
+        
     }
 
-    private void restoreDataFromText(String backupData) 
+    public boolean restoreBackup(File f)
     {
-        System.out.println("تم استعادة البيانات من النسخة الاحتياطية:\n" + backupData);
+        try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
+            String line  = "";
+            while ( reader.readLine() !=  null)
+            { 
+                line = reader.readLine();
+            }
+            if(databaseHandler.importDataBase(line))
+            {
+                return true;
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
     }
+
 }

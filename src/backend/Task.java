@@ -5,130 +5,98 @@
  */
 package backend;
 
+import java.util.Date;
+
 /**
  *
  * @author AHW STORE
  */
-import java.util.Date;
-import java.util.Objects;
-
-public class Task {
+public class Task
+{
     private int taskId;
     private int userId;
     private String title;
     private String description;
-    private Date dueDate;
-    private int priority;
-    private String status;
+    private Date startDate;
+    private Date endDate;
+    private boolean status;
 
-    public Task(int taskId, int userId, String title, String description, Date dueDate, int priority, String status) 
-    {
+    public Task(int userId, String title, String description, Date startDate, Date endDate, boolean status) {
+        this.userId = userId;
+        this.title = title;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.status = status;
+    }
+
+    public Task(int taskId, int userId, String title, String description, Date startDate, Date endDate, boolean status) {
         this.taskId = taskId;
         this.userId = userId;
         this.title = title;
         this.description = description;
-        this.dueDate = dueDate;
-        this.priority = priority;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.status = status;
     }
+    
 
-    public int getTaskId()
-    {
+    public int getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(int taskId) 
-    {
+    public void setTaskId(int taskId) {
         this.taskId = taskId;
     }
 
-    public int getUserId()
-    {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId)
-    {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
-    public String getTitle() 
-    {
+    public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title)
-    {
+    public void setTitle(String title) {
         this.title = title;
     }
 
-    public String getDescription() 
-    {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) 
-    {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    public Date getDueDate() 
-    {
-        return dueDate;
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setDueDate(Date dueDate) 
-    {
-        this.dueDate = dueDate;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
-    public int getPriority() 
-    {
-        return priority;
+    public Date getEndDate() {
+        return endDate;
     }
 
-    public void setPriority(int priority) 
-    {
-        this.priority = priority;
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
-    public String getStatus() {
+    public boolean isStatus() {
         return status;
     }
 
-    public void setStatus(String status) 
-    {
+    public void setStatus(boolean status) {
         this.status = status;
     }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-            return true;
-        if (obj == null || getClass() != obj.getClass())
-            return false;
-        Task other = (Task) obj;
-        return taskId == other.taskId &&
-               userId == other.userId &&
-               priority == other.priority &&
-               Objects.equals(title, other.title) &&
-               Objects.equals(description, other.description) &&
-               Objects.equals(dueDate, other.dueDate) &&
-               Objects.equals(status, other.status);
-    }
-
-    @Override
-    public String toString() 
-    {
-        return "Task{" +
-               "taskId=" + taskId +
-               ", userId=" + userId +
-               ", title='" + title + '\'' +
-               ", description='" + description + '\'' +
-               ", dueDate=" + dueDate +
-               ", priority=" + priority +
-               ", status='" + status + '\'' +
-               '}';
-    }
+    
+    
+    
 }

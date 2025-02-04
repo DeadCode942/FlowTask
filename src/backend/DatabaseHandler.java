@@ -309,105 +309,15 @@ public class DatabaseHandler
     return backups;
 }
     
-    public boolean addNotification(Notification notification) 
-    {
-        String sql = "INSERT INTO notification_id (task_id, message, send_time) VALUES (?, ?, ?)";
-
-        try (Connection conn = this.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql))
-        {
-            pstmt.setInt(1, notification.getTaskId());
-            pstmt.setString(2, notification.getMessage());
-            pstmt.setTimestamp(3, new java.sql.Timestamp(notification.getSendTime().getTime()));
-            pstmt.executeUpdate();
-            System.out.println("تمت إضافة الاشعار بنجاح!");
-            return true;
-        }
-        catch (SQLException e)
-        {
-            System.out.println("حدث خطأ أثناء إضافة الاشعار: " + e.getMessage());
-            return false;
-        }
-    }
-    
-    public boolean deleteNotification(Notification notification) 
-    {
-        String sql = "DELETE FROM Notification WHERE notification_id = ?";
-
-        try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) 
-        {
-            pstmt.setInt(1, notification.getNotificationId());
-            pstmt.executeUpdate();
-            System.out.println("تم حذف الاشعار بنجاح!");
-            return true;
-        }
-        catch (SQLException e)
-        {
-            System.out.println("حدث خطأ أثناء حذف الاشعار: " + e.getMessage());
-            return false;
-        }
-    }
-    
-    public boolean updateNotification (Notification notification)
-    {
-        String sql = "UPDATE Backups SET message = ? , send_time = ? WHERE notification_id = ?";
-        try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql))
-        {
-            pstmt.setString(1, notification.getMessage());
-            pstmt.setTimestamp(2, new Timestamp(notification.getSendTime().getTime()));
-            pstmt.setInt(3, notification.getNotificationId());
-            pstmt.executeUpdate();
-            System.out.println("تمت تعديل الاشعار بنجاح!");
-            return true;
-        }
-        catch (SQLException e)
-        {
-            System.out.println("حدث خطأ أثناء تعديل الاشعار: " + e.getMessage());
-            return false;
-        }
-    }
-    
-    public List<Notification> getNotificationByTask(Task task)
-    {
-        List<Notification> notifications = new ArrayList<>();
-        String sql = "SELECT * FROM Notification WHERE task_id = ?";
-
-        try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql))
-        {
-            pstmt.setInt(1, task.getTaskId());
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) 
-            {
-                Notification notification = new Notification(
-                    rs.getInt("notification_id"),
-                    rs.getInt("task_id"),
-                    rs.getString("message"),
-                    Date.valueOf(rs.getTimestamp("send_time").toString())
-                );
-                notifications.add(notification);
-            }
-        } 
-        catch (SQLException e) 
-        {
-            System.out.println("حدث خطأ أثناء استرجاع النسخ الاحتياطية: " + e.getMessage());
-        }
-        return notifications;
-    }
-    
-    public String exportDataBase(User user)
+   public String exportDataBase(User user)
     {
         StringBuilder code = new StringBuilder();
         List<Task> tasks = getTasksByUser(user);
         List<Backup> backups = getBackupsByUser(user);
-        List<Notification> notifications = null;
         code.append("INSERT INTO Users (user_id, name, phone_number, email, password) VALUES (")
                 .append(user.getUserId()).append(",").append("\'"+user.getName()+"\'").append(",")
                 .append("\'"+user.getPhoneNumber()+"\'").append(",").append("\'"+user.getEmail()+"\'").append(",")
-                .append("\'"+user.getPassword()+"\');").append("\n");
+                .append("\'"+user.getPassword()+"\');").append("\n").append("--user\n");
         for (Task task : tasks)
         {
             code.append("INSERT INTO Tasks (task_id, user_id, title, description, status, star_date,end_date) VALUES (")
@@ -416,24 +326,16 @@ public class DatabaseHandler
                     .append("\'"+task.isStatus()+"\'").append(",").append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(task.getStartDate())+"\'").append(",")
                     .append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(task.getEndDate())+"\');").append("\n");
         }
-        for (Task task : tasks)
-        {
-            notifications = getNotificationByTask(task);
-            for (Notification notification : notifications)
-            {
-                code.append("INSERT INTO notification_id (notification_id ,task_id, message, send_time) VALUES (")
-                        .append(notification.getNotificationId()).append(",")
-                        .append(notification.getTaskId()).append(",")
-                        .append("\'"+notification.getMessage()+"\'").append(",")
-                        .append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(notification.getSendTime())+"\');").append("\n");
-            }
-        }
+        code.append("--task\n");
+        
+        code.append("--notification\n");
         for (Backup backup : backups)
         {
-            code.append("INSERT INTO Backups (user_id, backup_date) VALUES (")
-                    .append(user.getUserId()).append(",").append("")
+            code.append("INSERT INTO Backups (backup_id ,user_id, backup_date) VALUES (")
+                    .append(backup.getBackupId()).append(",").append(user.getUserId()).append(",").append("")
                     .append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(backup.getBackupDate())+"\');").append("\n");
         }
+        code.append("--backup\n");
         return code.toString();
     }
      

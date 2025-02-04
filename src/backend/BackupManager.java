@@ -23,26 +23,44 @@ public class BackupManager
         databaseHandler = new DatabaseHandler();
     }
 
-    public boolean createBackup(User user, Backup backup, String path, String fileName) 
+    public boolean createBackup(User user, Backup backup, String path, String fileName) throws IOException 
     {
-    if (databaseHandler.addBackup(backup))
+    if (!databaseHandler.addBackup(backup)) 
     {
-        String data = databaseHandler.exportDataBase(user);
-        if (data != null) 
-        {
-            try (FileOutputStream fi = new FileOutputStream(new File(path + fileName))) {
-                fi.write(data.getBytes());
-                return true;
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                return false;
-            }
-        }
+        System.err.println("فشل في إضافة النسخة الاحتياطية إلى قاعدة البيانات.");
+        return false;
     }
-    return false;
+
+    String data = databaseHandler.exportDataBase(user);
+    if (data == null) 
+    {
+        System.err.println("فشل في تصدير بيانات قاعدة البيانات.");
+        return false;
+    }
+
+        System.out.println("1");
+    File file = new File(path + fileName);
+        System.out.println(file.getAbsolutePath());
+    if (!file.exists() && !file.createNewFile())
+    {
+        System.err.println("فشل في إنشاء ملف النسخة الاحتياطية: " + file.getAbsolutePath());
+        return false;
+    }
+        System.out.println("1");
+    try (FileOutputStream fileOutputStream = new FileOutputStream(file))
+    {
+        fileOutputStream.write(data.getBytes());
+        System.out.println("تم إنشاء النسخة الاحتياطية بنجاح في: " + file.getAbsolutePath());
+        return true;
+    }
+    catch (IOException e) 
+    {
+        System.err.println("حدث خطأ أثناء الكتابة في ملف النسخة الاحتياطية: " + e.getMessage());
+        e.printStackTrace();
+        return false;
+    }
 }
+
 
     public boolean restoreBackup(File f) 
     {

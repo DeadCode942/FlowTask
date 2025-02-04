@@ -5,6 +5,7 @@
  */
 package backend;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -17,15 +18,13 @@ public class Test {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException
     {
         User user = new User(4,"youssef", "01018120346", "yhassan5335.gamil.com", "hhyy");
         User user2 = null;
         DatabaseHandler dh = new DatabaseHandler();
         TaskManager tm = new TaskManager();
-        Task t =new Task(user.getUserId(), "school", "go to", new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), true);
-        NotificationManager nm = new NotificationManager();
-        Notification n = new Notification(t.getTaskId(),"dfff", new Date(System.currentTimeMillis()));
+        Task t =new Task(20,user.getUserId(), "school", "go to", new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), true);
         BackupManager bm = new BackupManager();
         Backup b = new Backup(user.getUserId(), new Date(System.currentTimeMillis()));
 
@@ -51,15 +50,10 @@ public class Test {
             System.exit(1);
         }
         System.out.println("1");
-        if(!nm.addNotification(n))
+        
+        System.out.println("2d");
+        if (bm.createBackup(user, b, "E:\\", "ddf.txt"))
         {
-            System.exit(1);
         }
-        System.out.println("2");
-        if (!bm.createBackup(user, b, "C:\\", "dd.txt"))
-        {
-            System.exit(1);
-        }
-        System.out.println("3");
     }
 }

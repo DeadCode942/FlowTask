@@ -15,15 +15,18 @@ public abstract class AuthService
 
     private AuthService(){}
     
-    public static boolean registerUser(User user)
+    public static boolean registerUser (User user) 
     {
-        
-        return db.addUser(user);
-        
+    if (db.getUser (user.getEmail(), user.getPassword()) != null) 
+    {
+        System.out.println("المستخدم موجود بالفعل!");
+        return false;
+    }
+    return db.addUser (user);
     }
     public static User login(String email, String password)
     {
-        return db.getUserById(email, password);
+        return db.getUser(email, password);
     }
     public abstract boolean logout(User user);
 }

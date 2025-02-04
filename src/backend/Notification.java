@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package frontend;
+package backend;
 
 /**
  *
@@ -21,6 +21,13 @@ public class Notification
     public Notification(int notificationId, int taskId, String message, Date sendTime)
     {
         this.notificationId = notificationId;
+        this.taskId = taskId;
+        this.message = message;
+        this.sendTime = sendTime;
+    }
+    
+    public Notification(int taskId, String message, Date sendTime)
+    {
         this.taskId = taskId;
         this.message = message;
         this.sendTime = sendTime;

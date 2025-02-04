@@ -14,8 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 public class DatabaseHandler 
 {
     private static final String URL = "jdbc:sqlite:taskflow.db";
@@ -23,9 +21,12 @@ public class DatabaseHandler
     public Connection connect()
     {
         Connection conn = null;
-        try {
+        try 
+        {
             conn = DriverManager.getConnection(URL);
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             System.out.println("حدث خطأ أثناء الاتصال بقاعدة البيانات: " + e.getMessage());
         }
         return conn;
@@ -33,15 +34,16 @@ public class DatabaseHandler
 
     public boolean addUser(User user)
     {
-        String sql = "INSERT INTO Users (name, phone_number, email, password) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Users (user_id , name, phone_number, email, password) VALUES (?,?, ?, ?, ?)";
 
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql))
         {
-            pstmt.setString(1, user.getName());
-            pstmt.setString(2, user.getPhoneNumber());
-            pstmt.setString(3, user.getEmail());
-            pstmt.setString(4, user.getPassword());
+            pstmt.setInt(1, user.getUserId());
+            pstmt.setString(2, user.getName());
+            pstmt.setString(3, user.getPhoneNumber());
+            pstmt.setString(4, user.getEmail());
+            pstmt.setString(5, user.getPassword());
             pstmt.executeUpdate();
             System.out.println("تمت إضافة المستخدم بنجاح!");
             return true;
@@ -95,55 +97,55 @@ public class DatabaseHandler
         }
     }
 
-    public User getUserById(String email, String password) 
+    public User getUser (String email, String password) {
+    String sql = "SELECT * FROM Users WHERE email = ? AND password = ?";
+    User user = null;
+
+    try (Connection conn = this.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql))
+    {
+        pstmt.setString(1, email);
+        pstmt.setString(2, password);
+        ResultSet rs = pstmt.executeQuery();
+
+        if (rs.next()) {
+            user = new User(
+                rs.getInt("user_id"),
+                rs.getString("name"),
+                rs.getString("phone_number"),
+                rs.getString("email"),
+                rs.getString("password")
+            );
+        }
+    }
+    catch (SQLException e) 
+    {
+        System.out.println("حدث خطأ أثناء استرجاع المستخدم: " + e.getMessage());
+    }
+    return user;
+    }
+    
+   public boolean addTask(Task task) 
    {
-        String sql = "SELECT * FROM Users WHERE email = ? , password = ?";
-        User user = null;
-
-        try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, email);
-            pstmt.setString(2, password);
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                user = new User(
-                    rs.getInt("user_id"),
-                    rs.getString("name"),
-                    rs.getString("phone_number"),
-                    rs.getString("email"),
-                    rs.getString("password")
-                );
-            }
-        } catch (SQLException e) {
-            System.out.println("حدث خطأ أثناء استرجاع المستخدم: " + e.getMessage());
-        }
-        return user;
+    String sql = "INSERT INTO Tasks (user_id, title, description, status, star_date, end_date) VALUES (?, ?, ?, ?, ?, ?)";
+    try (Connection conn = this.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, task.getUserId());
+        pstmt.setString(2, task.getTitle());
+        pstmt.setString(3, task.getDescription());
+        pstmt.setString(4, String.valueOf(task.isStatus()));
+        pstmt.setDate(5, new java.sql.Date(task.getStartDate().getTime()));
+        pstmt.setDate(6, new java.sql.Date(task.getEndDate().getTime()));
+        pstmt.executeUpdate();
+        System.out.println("تمت إضافة المهمة بنجاح!");
+        return true;
     }
-
-    public boolean addTask(Task task)
-{
-        String sql = "INSERT INTO Tasks (user_id, title, description, status, star_date,end_date) VALUES (?, ?, ?, ?, ?, ?)";
-
-        try (Connection conn = this.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) 
-        {
-            pstmt.setInt(1, task.getUserId());
-            pstmt.setString(2, task.getTitle());
-            pstmt.setString(3, task.getDescription());
-            pstmt.setString(4,String.valueOf(task.isStatus()));
-            pstmt.setDate(5, (Date) task.getStartDate());
-            pstmt.setDate(6, (Date) task.getEndDate());
-            pstmt.executeUpdate();
-            System.out.println("تمت إضافة المهمة بنجاح!");
-            return false;
-        }
-        catch (SQLException e) 
-        {
-            System.out.println("حدث خطأ أثناء إضافة المهمة: " + e.getMessage());
-            return false;
-        }
+    catch (SQLException e) 
+    {
+        System.out.println("حدث خطأ أثناء إضافة المهمة: " + e.getMessage());
+        return false;
     }
+   }
 
     public boolean updateTask(Task task)
     {
@@ -160,18 +162,21 @@ public class DatabaseHandler
             pstmt.executeUpdate();
             System.out.println("تمت تعديل المهمة بنجاح!");
             return true;
-        } catch (SQLException e) {
+        } 
+        catch (SQLException e) 
+        {
             System.out.println("حدث خطأ أثناء تعديل المهمة: " + e.getMessage());
             return false;
         }
     }
     
-
-    public boolean deleteTask(Task task) {
+    public boolean deleteTask(Task task) 
+    {
         String sql = "DELETE FROM Tasks WHERE task_id = ?";
 
         try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql))
+        {
             pstmt.setInt(1, task.getTaskId());
             pstmt.executeUpdate();
             System.out.println("تم حذف المهمة بنجاح!");
@@ -182,16 +187,19 @@ public class DatabaseHandler
         }
     }
 
-    public List<Task> getTasksByUser(User user) {
+    public List<Task> getTasksByUser (User user)
+    {
         List<Task> tasks = new ArrayList<>();
         String sql = "SELECT * FROM Tasks WHERE user_id = ?";
 
         try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql))
+        {
             pstmt.setInt(1, user.getUserId());
             ResultSet rs = pstmt.executeQuery();
 
-            while (rs.next()) {
+            while (rs.next())
+            {
                 Task task = new Task(
                     rs.getInt("task_id"),
                     rs.getInt("user_id"),
@@ -199,32 +207,34 @@ public class DatabaseHandler
                     rs.getString("description"),
                     rs.getDate("star_date"),
                     rs.getDate("end_date"),
-                    Boolean.valueOf(rs.getString("status"))
+                    Boolean.parseBoolean(rs.getString("status"))
                 );
                 tasks.add(task);
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) 
+        {
             System.out.println("حدث خطأ أثناء استرجاع مهام المستخدم: " + e.getMessage());
         }
-        return tasks;
-    }
+    return tasks;
+}
     
-
-
-
-
-
     public boolean addBackup(Backup backup) 
     {
+        if (backup.getUserId() <= 0)
+        {
+            System.out.println("معرف المستخدم غير صالح!");
+            return false;
+        }
         String sql = "INSERT INTO Backups (user_id, backup_date) VALUES (?, ?)";
-
         try (Connection conn = this.connect();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                PreparedStatement pstmt = conn.prepareStatement(sql)) 
+        {
             pstmt.setInt(1, backup.getUserId());
             pstmt.setTimestamp(2, new java.sql.Timestamp(backup.getBackupDate().getTime()));
             pstmt.executeUpdate();
             System.out.println("تمت إضافة النسخة الاحتياطية بنجاح!");
-            return false;
+            return true;
         }
         catch (SQLException e)
         {
@@ -233,103 +243,215 @@ public class DatabaseHandler
         }
     }
     
-     public boolean deleteBackup(Backup backup) 
-     {
-        String sql = "DELETE FROM Backups WHERE task_id = ?";
+    public boolean deleteBackup(Backup backup) 
+    {
+        String sql = "DELETE FROM Backups WHERE backup_id = ?";
 
         try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)) 
+        {
             pstmt.setInt(1, backup.getBackupId());
             pstmt.executeUpdate();
             System.out.println("تم حذف المهمة بنجاح!");
             return true;
-        } catch (SQLException e) {
+        }
+        catch (SQLException e)
+        {
             System.out.println("حدث خطأ أثناء حذف المهمة: " + e.getMessage());
             return false;
         }
     }
     
-     public boolean updateBackup (Backup backup)
+    public boolean updateBackup(Backup backup)
     {
-        String sql = "UPDATE Backups SET backup_date = ? WHERE backup_id = ?";
-        try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql))
+    String sql = "UPDATE Backups SET backup_date = ? WHERE backup_id = ?";
+    try (Connection conn = this.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql))
+    {
+        pstmt.setTimestamp(1, new java.sql.Timestamp(backup.getBackupDate().getTime()));
+        pstmt.setInt(2, backup.getBackupId());
+        pstmt.executeUpdate();
+        System.out.println("تمت تعديل النسخة الاحتياطية بنجاح!");
+        return true;
+    } 
+    catch (SQLException e)
+    {
+        System.out.println("حدث خطأ أثناء تعديل النسخة الاحتياطية: " + e.getMessage());
+        return false;
+    }
+}
+    
+    public List<Backup> getBackupsByUser (User user)
+    {
+    List<Backup> backups = new ArrayList<>();
+    String sql = "SELECT * FROM Backups WHERE user_id = ?";
+
+    try (Connection conn = this.connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql))
+    {
+        pstmt.setInt(1, user.getUserId());
+        ResultSet rs = pstmt.executeQuery();
+
+        while (rs.next()) 
         {
-            pstmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
-            pstmt.setInt(2, backup.getBackupId());
+            Backup backup = new Backup(
+                rs.getInt("backup_id"),
+                rs.getInt("user_id"),
+                rs.getTimestamp("backup_date") // استخدام Timestamp مباشرة
+            );
+            backups.add(backup);
+        }
+    } 
+    catch (SQLException e) 
+    {
+        System.out.println("حدث خطأ أثناء استرجاع النسخ الاحتياطية: " + e.getMessage());
+    }
+    return backups;
+}
+    
+    public boolean addNotification(Notification notification) 
+    {
+        String sql = "INSERT INTO notification_id (task_id, message, send_time) VALUES (?, ?, ?)";
+
+        try (Connection conn = this.connect();
+            PreparedStatement pstmt = conn.prepareStatement(sql))
+        {
+            pstmt.setInt(1, notification.getTaskId());
+            pstmt.setString(2, notification.getMessage());
+            pstmt.setTimestamp(3, new java.sql.Timestamp(notification.getSendTime().getTime()));
             pstmt.executeUpdate();
-            System.out.println("تمت تعديل المهمة بنجاح!");
+            System.out.println("تمت إضافة الاشعار بنجاح!");
             return true;
-        } catch (SQLException e) {
-            System.out.println("حدث خطأ أثناء تعديل المهمة: " + e.getMessage());
+        }
+        catch (SQLException e)
+        {
+            System.out.println("حدث خطأ أثناء إضافة الاشعار: " + e.getMessage());
             return false;
         }
     }
-        public List<Backup> getBackupsByUser(User user) {
-        List<Backup> backups = new ArrayList<>();
-        String sql = "SELECT * FROM Backups WHERE user_id = ?";
+    
+    public boolean deleteNotification(Notification notification) 
+    {
+        String sql = "DELETE FROM Notification WHERE notification_id = ?";
 
         try (Connection conn = this.connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, user.getUserId());
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                Backup backup = new Backup(
-                    rs.getInt("backup_id"),
-                    rs.getInt("user_id"),
-                    Date.valueOf(rs.getTimestamp("backup_date").toString())
-                );
-                backups.add(backup);
-            }
-        } catch (SQLException e) {
-            System.out.println("حدث خطأ أثناء استرجاع النسخ الاحتياطية: " + e.getMessage());
+             PreparedStatement pstmt = conn.prepareStatement(sql)) 
+        {
+            pstmt.setInt(1, notification.getNotificationId());
+            pstmt.executeUpdate();
+            System.out.println("تم حذف الاشعار بنجاح!");
+            return true;
         }
-        return backups;
+        catch (SQLException e)
+        {
+            System.out.println("حدث خطأ أثناء حذف الاشعار: " + e.getMessage());
+            return false;
+        }
     }
     
-     public String exportDataBase(User user)
-     {
+    public boolean updateNotification (Notification notification)
+    {
+        String sql = "UPDATE Backups SET message = ? , send_time = ? WHERE notification_id = ?";
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql))
+        {
+            pstmt.setString(1, notification.getMessage());
+            pstmt.setTimestamp(2, new Timestamp(notification.getSendTime().getTime()));
+            pstmt.setInt(3, notification.getNotificationId());
+            pstmt.executeUpdate();
+            System.out.println("تمت تعديل الاشعار بنجاح!");
+            return true;
+        }
+        catch (SQLException e)
+        {
+            System.out.println("حدث خطأ أثناء تعديل الاشعار: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    public List<Notification> getNotificationByTask(Task task)
+    {
+        List<Notification> notifications = new ArrayList<>();
+        String sql = "SELECT * FROM Notification WHERE task_id = ?";
+
+        try (Connection conn = this.connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql))
+        {
+            pstmt.setInt(1, task.getTaskId());
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) 
+            {
+                Notification notification = new Notification(
+                    rs.getInt("notification_id"),
+                    rs.getInt("task_id"),
+                    rs.getString("message"),
+                    Date.valueOf(rs.getTimestamp("send_time").toString())
+                );
+                notifications.add(notification);
+            }
+        } 
+        catch (SQLException e) 
+        {
+            System.out.println("حدث خطأ أثناء استرجاع النسخ الاحتياطية: " + e.getMessage());
+        }
+        return notifications;
+    }
+    
+    public String exportDataBase(User user)
+    {
         StringBuilder code = new StringBuilder();
         List<Task> tasks = getTasksByUser(user);
         List<Backup> backups = getBackupsByUser(user);
+        List<Notification> notifications = null;
         code.append("INSERT INTO Users (user_id, name, phone_number, email, password) VALUES (")
                 .append(user.getUserId()).append(",").append("\'"+user.getName()+"\'").append(",")
                 .append("\'"+user.getPhoneNumber()+"\'").append(",").append("\'"+user.getEmail()+"\'").append(",")
                 .append("\'"+user.getPassword()+"\');").append("\n");
-         for (Task task : tasks)
-         {
-             code.append("INSERT INTO Tasks (task_id, user_id, title, description, status, star_date,end_date) VALUES (")
-                     .append(task.getTaskId()).append(",").append(task.getUserId()).append(",")
-                     .append("\'"+task.getTitle()+"\'").append(",").append("\'"+task.getDescription()+"\'").append(",")
-                     .append("\'"+task.isStatus()+"\'").append(",").append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(task.getStartDate())+"\'").append(",")
-                     .append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(task.getEndDate())+"\');").append("\n");
-         }
-         for (Backup backup : backups)
-         {
-             code.append("INSERT INTO Backups (user_id, backup_date) VALUES (")
-                     .append(user.getUserId()).append(",").append("")
-                     .append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(backup.getBackupDate())+"\');").append("\n");
-         }
-        return code.toString();
-     }
-     
-     public boolean importDataBase(String s)
-     {
-        String sql[] = s.split(";");
-        try (Connection conn = this.connect();Statement st = conn.createStatement())
+        for (Task task : tasks)
         {
-            for (String code : sql) 
+            code.append("INSERT INTO Tasks (task_id, user_id, title, description, status, star_date,end_date) VALUES (")
+                    .append(task.getTaskId()).append(",").append(task.getUserId()).append(",")
+                    .append("\'"+task.getTitle()+"\'").append(",").append("\'"+task.getDescription()+"\'").append(",")
+                    .append("\'"+task.isStatus()+"\'").append(",").append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(task.getStartDate())+"\'").append(",")
+                    .append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(task.getEndDate())+"\');").append("\n");
+        }
+        for (Task task : tasks)
+        {
+            notifications = getNotificationByTask(task);
+            for (Notification notification : notifications)
             {
-                st.executeUpdate(code);
+                code.append("INSERT INTO notification_id (notification_id ,task_id, message, send_time) VALUES (")
+                        .append(notification.getNotificationId()).append(",")
+                        .append(notification.getTaskId()).append(",")
+                        .append("\'"+notification.getMessage()+"\'").append(",")
+                        .append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(notification.getSendTime())+"\');").append("\n");
             }
-            return true;
         }
-        catch (SQLException ex)
+        for (Backup backup : backups)
         {
-            ex.printStackTrace();
-            return true;
+            code.append("INSERT INTO Backups (user_id, backup_date) VALUES (")
+                    .append(user.getUserId()).append(",").append("")
+                    .append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(backup.getBackupDate())+"\');").append("\n");
         }
-     }
-    
+        return code.toString();
+    }
+     
+    public boolean importDataBase(String s) 
+    {
+    String[] sql = s.split(";");
+    try (Connection conn = this.connect(); Statement st = conn.createStatement()) 
+    {
+        for (String code : sql) 
+        {
+            st.executeUpdate(code);
+        }
+        return true;
+    } 
+    catch (SQLException ex) 
+    {
+        ex.printStackTrace();
+        return false;
+    }
+}
 }

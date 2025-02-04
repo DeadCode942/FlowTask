@@ -85,18 +85,18 @@ public class User {
         this.password = password;
     }
 
-    public boolean equals(User user)
+    @Override
+    public boolean equals(Object obj)
     {
-        if (this == user)
-            return true;
-        if (user == null )
-            return false;
-        User other = user;
-        return userId == other.userId &&
-               Objects.equals(name, other.name) &&
-               Objects.equals(phoneNumber, other.phoneNumber) &&
-               Objects.equals(email, other.email) &&
-               Objects.equals(password, other.password);
+    if (this == obj) return true;
+    if (obj == null || getClass() != obj.getClass())
+        return false;
+    User other = (User ) obj;
+    return userId == other.userId &&
+           Objects.equals(name, other.name) &&
+           Objects.equals(phoneNumber, other.phoneNumber) &&
+           Objects.equals(email, other.email) &&
+           Objects.equals(password, other.password);
     }
 
     @Override

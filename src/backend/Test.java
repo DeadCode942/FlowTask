@@ -17,37 +17,49 @@ public class Test {
     /**
      * @param args the command line arguments
      */
-     public static void main(String[] args) {
-        User user = new User(9,"youssf", "fdgfd", "sdfs", "dsf");
-        Task task = new Task(user.getUserId(), "rfdgfd", "dfgdfg", new Date(System.currentTimeMillis()) , new Date(System.currentTimeMillis()),true);
-        Backup backup = new Backup(user.getUserId(), new Date(System.currentTimeMillis()));
-        StringBuilder code = new StringBuilder();
-        code.append("INSERT INTO Users (user_id, name, phone_number, email, password) VALUES (")
-                .append(user.getUserId()).append(",").append("\'"+user.getName()+"\'").append(",")
-                .append("\'"+user.getPhoneNumber()+"\'").append(",").append("\'"+user.getEmail()+"\'").append(",")
-                .append("\'"+user.getPassword()+"\');").append("\n");
-        
-        ///////////////////////////////////////////////////////////////
-        code.append("INSERT INTO Tasks (task_id, user_id, title, description, status, star_date,end_date) VALUES (")
-                     .append(task.getTaskId()).append(",").append(task.getUserId()).append(",")
-                     .append("\'"+task.getTitle()+"\'").append(",").append("\'"+task.getDescription()+"\'").append(",")
-                     .append("\'"+task.isStatus()+"\'").append(",").append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(task.getStartDate())+"\'").append(",")
-                     .append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(task.getEndDate())+"\');").append("\n");
-        
-        /////////////////////////////////////////////////////////////////
-        code.append("INSERT INTO Backups (user_id, backup_date) VALUES (")
-                     .append(user.getUserId()).append(",").append("")
-                     .append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(backup.getBackupDate())+"\');").append("\n");
-        System.out.print(code.toString());
-     String g ="INSERT INTO Users (user_id, name, phone_number, email, password) VALUES (9,'youssf','fdgfd','sdfs','dsf');\n" +
-"INSERT INTO Tasks (task_id, user_id, title, description, status, star_date,end_date) VALUES (0,9,'rfdgfd','dfgdfg','true','2025-02-03 22:44:39','2025-02-03 22:44:39');\n" +
-"INSERT INTO Backups (user_id, backup_date) VALUES (9,'2025-02-03 22:44:39');";
-         System.out.println(g);
-         String f[]= g.split(";");
-         for (String string : f) {
-             System.out.print(string);
-         }
-     }
-     
-           
+    public static void main(String[] args)
+    {
+        User user = new User(4,"youssef", "01018120346", "yhassan5335.gamil.com", "hhyy");
+        User user2 = null;
+        DatabaseHandler dh = new DatabaseHandler();
+        TaskManager tm = new TaskManager();
+        Task t =new Task(user.getUserId(), "school", "go to", new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), true);
+        NotificationManager nm = new NotificationManager();
+        Notification n = new Notification(t.getTaskId(),"dfff", new Date(System.currentTimeMillis()));
+        BackupManager bm = new BackupManager();
+        Backup b = new Backup(user.getUserId(), new Date(System.currentTimeMillis()));
+
+
+        System.out.println("ff");
+        AuthService.registerUser(user);
+        System.out.println("dd");
+        user2 = AuthService.login("yhassan5335.gamil.com", "hhyy");
+        System.err.println(user);
+        System.out.println(user2);
+        if (user2 == null)
+        {
+            System.exit(0);
         }
+        System.out.println("dfdf");
+        if(!user.equals(user2))
+        {
+            System.exit(1);
+        }
+        System.out.println("wellcom");
+        if(!tm.addTask(t))
+        {
+            System.exit(1);
+        }
+        System.out.println("1");
+        if(!nm.addNotification(n))
+        {
+            System.exit(1);
+        }
+        System.out.println("2");
+        if (!bm.createBackup(user, b, "C:\\", "dd.txt"))
+        {
+            System.exit(1);
+        }
+        System.out.println("3");
+    }
+}

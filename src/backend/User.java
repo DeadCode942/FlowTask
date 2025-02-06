@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package backend;
+package Backend;
 
 import java.util.Objects;
 
@@ -12,7 +12,7 @@ import java.util.Objects;
  * @author AHW STORE
  */
 public class User {
-    private int userId;
+    private int Id;
     private String name;
     private String phoneNumber;
     private String email;
@@ -26,9 +26,9 @@ public class User {
         this.password = password;
     }
 
-    public User(int userId, String name, String phoneNumber, String email, String password) 
+    public User(int Id, String name, String phoneNumber, String email, String password) 
     {
-        this.userId = userId;
+        this.Id = Id;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.email = email;
@@ -37,12 +37,12 @@ public class User {
 
     public int getUserId()
     {
-        return userId;
+        return Id;
     }
 
-    public void setUserId(int userId)
+    public void setId(int Id)
     {
-        this.userId = userId;
+        this.Id = Id;
     }
 
     public String getName() 
@@ -88,26 +88,33 @@ public class User {
     @Override
     public boolean equals(Object obj)
     {
-    if (this == obj) return true;
-    if (obj == null || getClass() != obj.getClass())
-        return false;
-    User other = (User ) obj;
-    return userId == other.userId &&
-           Objects.equals(name, other.name) &&
-           Objects.equals(phoneNumber, other.phoneNumber) &&
-           Objects.equals(email, other.email) &&
-           Objects.equals(password, other.password);
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        User other = (User) obj;
+        return Id == other.Id &&
+            Objects.equals(name, other.name) &&
+            Objects.equals(phoneNumber, other.phoneNumber) &&
+            Objects.equals(email, other.email) &&
+            Objects.equals(password, other.password);
+    }
+    
+    @Override
+    public int hashCode() 
+    {
+        return Objects.hash(Id, name, phoneNumber, email);
     }
 
+    
     @Override
     public String toString()
     {
         return "User{" +
-               "userId=" + userId +
-               ", name='" + name + '\'' +
-               ", phoneNumber='" + phoneNumber + '\'' +
-               ", email='" + email + '\'' +
-               ", password='" + password + '\'' +
-               '}';
+                "userId=" + Id +
+                ", name='" + name + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", email='" + email + '\'' +
+                ", password='[PROTECTED]'" +
+                '}';
     }
+
 }

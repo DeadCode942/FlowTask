@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package backend;
+package Backend;
 
 import java.util.Date;
 
@@ -13,15 +13,16 @@ import java.util.Date;
  */
 public class Task
 {
+    
     private int taskId;
     private int userId;
     private String title;
     private String description;
-    private Date startDate;
-    private Date endDate;
+    private String startDate;
+    private String endDate;
     private boolean status;
 
-    public Task(int userId, String title, String description, Date startDate, Date endDate, boolean status) {
+    public Task(int userId, String title, String description, String startDate, String endDate, boolean status) {
         this.userId = userId;
         this.title = title;
         this.description = description;
@@ -30,7 +31,7 @@ public class Task
         this.status = status;
     }
 
-    public Task(int taskId, int userId, String title, String description, Date startDate, Date endDate, boolean status) {
+    public Task(int taskId, int userId, String title, String description, String startDate, String endDate, boolean status) {
         this.taskId = taskId;
         this.userId = userId;
         this.title = title;
@@ -73,19 +74,19 @@ public class Task
         this.description = description;
     }
 
-    public Date getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public String getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(String endDate) {
         this.endDate = endDate;
     }
 

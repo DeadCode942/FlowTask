@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package backend;
+package Backend;
 
 import java.util.List;
 
@@ -13,11 +13,13 @@ import java.util.List;
  */
 public class TaskManager 
 {
+    private Task task ;
     private DatabaseHandler databaseHandler;
-
-    public TaskManager() 
+    
+    public TaskManager(Task task) 
     {
         databaseHandler = new DatabaseHandler();
+        this.task = task;
     }
 
     public boolean addTask(Task task) 

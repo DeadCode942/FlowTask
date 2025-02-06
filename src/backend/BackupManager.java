@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package backend;
+package Backend;
 
 /**
  *
@@ -38,9 +38,7 @@ public class BackupManager
         return false;
     }
 
-        System.out.println("1");
     File file = new File(path + fileName);
-        System.out.println(file.getAbsolutePath());
     if (!file.exists() && !file.createNewFile())
     {
         System.err.println("فشل في إنشاء ملف النسخة الاحتياطية: " + file.getAbsolutePath());
@@ -84,16 +82,6 @@ public class BackupManager
     public boolean addBackup(Backup backup) 
     {
         return databaseHandler.addBackup(backup);
-    }
-
-    public boolean updateNotification(Backup backup) 
-    {
-        return databaseHandler.updateBackup(backup);
-    }
-
-    public boolean deleteNotification(Backup backup) 
-    {
-        return databaseHandler.deleteBackup(backup);
     }
 
     public List<Backup> getBackupByUser (User user) 

@@ -97,6 +97,11 @@ public class Task
     public void setStatus(boolean status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return "Task{" + "taskId=" + taskId + ", userId=" + userId + ", title=" + title + ", description=" + description + ", startDate=" + startDate + ", endDate=" + endDate + ", status=" + status + '}';
+    }
     
     
     

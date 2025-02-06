@@ -13,18 +13,20 @@ import java.util.List;
  */
 public class TaskManager 
 {
-    private Task task ;
     private DatabaseHandler databaseHandler;
     
-    public TaskManager(Task task) 
+    public TaskManager() 
     {
         databaseHandler = new DatabaseHandler();
-        this.task = task;
     }
 
-    public boolean addTask(Task task) 
+    public Task addTask(Task task) 
     {
-        return databaseHandler.addTask(task);
+        if (databaseHandler.addTask(task))
+        {
+            return databaseHandler.getTask(task.getTitle(), task.getEndDate());
+        }
+        return null;
     }
 
     public boolean updateTask(Task task) 

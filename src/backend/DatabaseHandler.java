@@ -127,7 +127,7 @@ public class DatabaseHandler
     
     public boolean addTask(Task task) 
     {
-    String sql = "INSERT INTO tasks(user_id, title, description, status, star_date, end_date) VALUES (?, ?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO tasks(user_id, title, description, status, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?)";
     try (Connection conn = this.connect();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
         pstmt.setInt(1, task.getUserId());
@@ -149,7 +149,7 @@ public class DatabaseHandler
 
     public boolean updateTask(Task task)
     {
-        String sql = "UPDATE tasks SET title = ?, description = ?, status = ?, star_date = ?, end_date = ? WHERE task_id = ?";
+        String sql = "UPDATE tasks SET title = ?, description = ?, status = ?, start_date = ?, end_date = ? WHERE task_id = ?";
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql))
         {
@@ -186,11 +186,40 @@ public class DatabaseHandler
             return false;
         }
     }
-
+    
+    public Task getTask(String title, String end_date) 
+    {
+        String query = "SELECT task_id, user_id, title, description, start_date, end_date, status " +
+                "FROM tasks WHERE title = ? AND end_date = ? LIMIT 1"; 
+        try (Connection conn = this.connect();
+                PreparedStatement pst = conn.prepareStatement(query))
+        {
+            pst.setString(1, title);
+            pst.setString(2, end_date);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                return new Task(
+                    rs.getInt("task_id"),
+                    rs.getInt("user_id"),
+                    rs.getString("title"),
+                    rs.getString("description"),
+                    rs.getString("start_date"),
+                    rs.getString("end_date"),
+                    rs.getInt("status") == 1
+                );
+            }
+        }
+        catch (SQLException e) 
+        {
+        e.printStackTrace();
+        }
+        return null;
+    }
+    
     public List<Task> getTasksByUser(User user)
     {
         List<Task> tasks = new ArrayList<>();
-        String sql = "SELECT * FROM task_id WHERE user_id = ?";
+        String sql = "SELECT * FROM tasks WHERE user_id = ?";
 
         try (Connection conn = this.connect();
              PreparedStatement pstmt = conn.prepareStatement(sql))
@@ -205,7 +234,7 @@ public class DatabaseHandler
                     rs.getInt("user_id"),
                     rs.getString("title"),
                     rs.getString("description"),
-                    rs.getString("star_date"),
+                    rs.getString("start_date"),
                     rs.getString("end_date"),
                     rs.getInt("status") == 1
                 );
@@ -277,18 +306,18 @@ public class DatabaseHandler
         List<Task> tasks = getTasksByUser(user);
         List<Backup> backups = getBackupsByUser(user);
         
-        code.append("--user\n").append("INSERT INTO Users (user_id, name, phone_number, email, password) VALUES (")
+        code.append("--user\n").append("INSERT INTO Users (id, name, phoneNumber, email, password) VALUES (")
                 .append(user.getUserId()).append(",").append("\'"+user.getName()+"\'").append(",")
                 .append("\'"+user.getPhoneNumber()+"\'").append(",").append("\'"+user.getEmail()+"\'").append(",")
                 .append("\'"+user.getPassword()+"\');").append("\n").append("--tasks\n");
         
         for (Task task : tasks)
         {
-            code.append("INSERT INTO Tasks (task_id, user_id, title, description, status, star_date,end_date) VALUES (")
+            code.append("INSERT INTO Tasks (task_id, user_id, title, description, status, start_date,end_date) VALUES (")
                     .append(task.getTaskId()).append(",").append(task.getUserId()).append(",")
                     .append("\'"+task.getTitle()+"\'").append(",").append("\'"+task.getDescription()+"\'").append(",")
-                    .append("\'"+task.isStatus()+"\'").append(",").append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(task.getStartDate())+"\'").append(",")
-                    .append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(task.getEndDate())+"\');").append("\n");
+                    .append("\'"+task.isStatus()+"\'").append(",").append("\'"+task.getStartDate()+"\'").append(",")
+                    .append("\'"+task.getEndDate()+"\');").append("\n");
         }
         
         code.append("--backups\n");
@@ -297,7 +326,7 @@ public class DatabaseHandler
         {
             code.append("INSERT INTO Backups (backup_id ,user_id, backup_date) VALUES (")
                     .append(backup.getBackupId()).append(",").append(user.getUserId()).append(",").append("")
-                    .append("\'"+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(backup.getBackupDate())+"\');").append("\n");
+                    .append("\'"+backup.getBackupDate()+"\');").append("\n");
         }
         return code.toString();
     }
@@ -320,7 +349,7 @@ public class DatabaseHandler
         }
     }
     
-     public int getIdUser(User user)
+     public int getIdTask(User user)
      {
         int userId = -1;
         String query = "SELECT id FROM users WHERE email = ?";

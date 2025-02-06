@@ -78,12 +78,6 @@ public class BackupManager
         return false;
     }
 }
-    
-    public boolean addBackup(Backup backup) 
-    {
-        return databaseHandler.addBackup(backup);
-    }
-
     public List<Backup> getBackupByUser (User user) 
     {
         if (user == null)
